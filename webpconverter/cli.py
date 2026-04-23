@@ -40,7 +40,7 @@ console = Console()
 @click.group()
 @click.version_option(package_name="webpconverter")
 def main() -> None:
-    """webpconverter — convert PNG, JPEG and SVG assets to optimized WebP."""
+    """webpconverter — convert PNG and JPEG assets to optimized WebP."""
 
 
 # ---------------------------------------------------------------------------

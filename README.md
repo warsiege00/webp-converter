@@ -1,10 +1,10 @@
 # webpconverter
 
-A macOS CLI tool that scans a project's asset folder and converts PNG, JPEG and SVG images to optimized WebP — combining fast load times with excellent visual quality.
+A macOS CLI tool that scans a project's asset folder and converts PNG and JPEG images to optimized WebP — combining fast load times with excellent visual quality.
 
 ## Features
 
-- Recursively discovers `.png`, `.jpg`, `.jpeg` and `.svg` files
+- Recursively discovers `.png`, `.jpg`, and `.jpeg` files
 - Skips any `optimized/` folders (never re-processes already converted files)
 - Two-step workflow: **plan first, then execute** — review before committing
 - Saves converted files in an `optimized/` subfolder beside the originals
@@ -15,9 +15,6 @@ A macOS CLI tool that scans a project's asset folder and converts PNG, JPEG and 
 Requires Python 3.9+ and [pipx](https://pipx.pypa.io/stable/).
 
 ```bash
-# Install system dependency for SVG rendering (macOS)
-brew install cairo
-
 # Install the tool globally via pipx
 pipx install /path/to/webp-converter
 
@@ -25,7 +22,7 @@ pipx install /path/to/webp-converter
 webpconverter --version
 ```
 
-> **Note:** `cairo` must be installed via Homebrew before `cairosvg` can rasterise SVG files.
+> **Note:** Plan files created before SVG support was removed may still list `.svg` paths in the YAML front-matter. Regenerate the plan with `webpconverter plan` or remove those entries before running `webpconverter exec`.
 
 ### Development install (editable)
 
@@ -61,14 +58,14 @@ This produces a timestamped plan file such as `plan_20260422_153000.md`:
 ```
 ## webpconverter plan — 2026-04-22 15:30:00
 
-> 12 files scanned — total original: 1.4 MB — estimated after: 980.0 KB — estimated saving: 30.0%
+> 11 files scanned — total original: 1.4 MB — estimated after: 980.0 KB — estimated saving: 30.0%
 > WebP quality setting: 85
 
 | # | File                      | Type | Current Size | Est. WebP Size | Est. Saving | Est. Load Gain |
 |---|---------------------------|------|-------------|----------------|-------------|----------------|
 | 1 | `src/assets/logo.png`     | PNG  | 120.0 KB    | 84.0 KB        | 30.0%       | 0.3 ms         |
 | 2 | `src/assets/hero.jpg`     | JPEG | 320.0 KB    | 240.0 KB       | 25.0%       | 0.6 ms         |
-| 3 | `src/assets/icon.svg`     | SVG  | 8.5 KB      | 5.1 KB         | 40.0%       | 0.0 ms         |
+| 3 | `src/assets/banner.jpg`   | JPEG | 256.0 KB    | 192.0 KB       | 25.0%       | 0.5 ms         |
 ```
 
 You can edit the plan (remove rows, change the quality in the front-matter) before executing.
@@ -96,7 +93,7 @@ After conversion a `convert_report.md` is written next to the plan file:
 
 > Plan file: plan_20260422_153000.md
 > WebP quality: 85
-> Results: 12 converted, 0 failed out of 12 total
+> Results: 11 converted, 0 failed out of 11 total
 > Total size before: 1.4 MB → after: 980.0 KB — saved 420.0 KB (30.0%)
 
 ### Output paths (for AI reference)
@@ -132,7 +129,7 @@ webpconverter plan
 
 webpconverter exec plan_*.md
     └─ planner.py    → parse YAML front-matter
-    └─ converter.py  → Pillow (PNG/JPEG) | CairoSVG → Pillow (SVG) → WebP
+    └─ converter.py  → Pillow (PNG/JPEG) → WebP
     └─ reporter.py   → write convert_report.md
 ```
 
@@ -142,7 +139,6 @@ webpconverter exec plan_*.md
 | Package    | Purpose                        |
 | ---------- | ------------------------------ |
 | `Pillow`   | PNG / JPEG → WebP              |
-| `cairosvg` | SVG rasterisation → PNG → WebP |
 | `click`    | CLI framework                  |
 | `rich`     | Terminal progress & tables     |
 | `PyYAML`   | Plan file front-matter parsing |

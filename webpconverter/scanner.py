@@ -6,7 +6,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".svg"}
+SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 OPTIMIZED_DIR_NAME = "optimized"
 
 
@@ -19,8 +19,6 @@ class AssetFile:
     @property
     def format_label(self) -> str:
         ext = self.extension.lower()
-        if ext == ".svg":
-            return "SVG"
         if ext in {".jpg", ".jpeg"}:
             return "JPEG"
         return "PNG"

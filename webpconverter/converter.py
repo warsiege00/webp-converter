@@ -1,13 +1,11 @@
-"""Convert PNG, JPEG and SVG files to optimized WebP.
+"""Convert PNG and JPEG files to optimized WebP.
 
 Pipeline:
   PNG / JPEG  → Pillow open → save as WebP
-  SVG         → CairoSVG render to PNG bytes → Pillow open → save as WebP
 """
 
 from __future__ import annotations
 
-import io
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -61,30 +59,6 @@ def _convert_raster(source: Path, output: Path, quality: int) -> None:
         )
 
 
-def _convert_svg(source: Path, output: Path, quality: int, scale: float = 1.0) -> None:
-    """Rasterise SVG → PNG bytes → WebP using CairoSVG + Pillow."""
-    import cairosvg
-    from PIL import Image  # lazy import
-
-    png_bytes = cairosvg.svg2png(
-        url=str(source),
-        scale=scale,
-    )
-
-    with Image.open(io.BytesIO(png_bytes)) as img:
-        if img.mode not in {"RGB", "RGBA"}:
-            img = img.convert("RGBA")
-
-        output.parent.mkdir(parents=True, exist_ok=True)
-        img.save(
-            output,
-            format="WEBP",
-            quality=quality,
-            method=6,
-            lossless=False,
-        )
-
-
 def convert_file(source_path: str | Path, quality: int = 85) -> ConversionResult:
     """Convert a single image file to WebP.
 
@@ -107,9 +81,7 @@ def convert_file(source_path: str | Path, quality: int = 85) -> ConversionResult
 
     ext = source.suffix.lower()
     try:
-        if ext == ".svg":
-            _convert_svg(source, output, quality)
-        elif ext in {".png", ".jpg", ".jpeg"}:
+        if ext in {".png", ".jpg", ".jpeg"}:
             _convert_raster(source, output, quality)
         else:
             result.error = f"Unsupported extension: {ext}"

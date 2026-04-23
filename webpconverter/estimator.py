@@ -15,7 +15,6 @@ _REDUCTION_RATIO: dict[str, float] = {
     ".png": 0.70,   # WebP is ~30% smaller than PNG
     ".jpg": 0.75,   # WebP is ~25% smaller than JPEG
     ".jpeg": 0.75,
-    ".svg": 0.60,   # rasterised WebP tends to be significantly smaller
 }
 
 # Typical web page loading impact per KB saved (very rough heuristic):
